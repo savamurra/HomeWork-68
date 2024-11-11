@@ -11,7 +11,9 @@ const TodoForm = () => {
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (title) {
+        if (title.trim().length === 0) {
+            alert('Заполните поле');
+        } else {
             dispatch(addTodo(title));
         }
         setTitle('');
@@ -33,6 +35,7 @@ const TodoForm = () => {
                         label="Outlined"
                         variant="outlined"
                         value={title}
+                        required
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                     />
                     <Button style={{marginTop: '5px'}} type='submit' variant="text">Send</Button>
