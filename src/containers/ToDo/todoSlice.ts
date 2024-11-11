@@ -1,18 +1,19 @@
 import {createAsyncThunk, createSlice, PayloadAction,} from "@reduxjs/toolkit";
 import axiosAPI from "../../axiosAPI.tsx";
 
-interface ITodo  {
+interface ITodo {
     title: string,
+    id: string,
     status: boolean,
 }
 
-interface ITodoState  {
+interface ITodoProps {
     todos: ITodo[]
     loading: boolean
     error: boolean
 }
 
-const initialState: ITodoState = {
+const initialState: ITodoProps = {
     todos: [],
     loading: false,
     error: false
@@ -20,23 +21,25 @@ const initialState: ITodoState = {
 
 
 export const fetchTodo = createAsyncThunk('todo/fetchTodo', async () => {
-    const response :{data: ITodo[]} = await axiosAPI<ITodo[]>('todo.json');
-    return response.data;
+    const response = await axiosAPI<{[key: string]: ITodo}>('todo.json');
+    return Object.keys(response.data).map((keyAPI) => {
+        return {
+            ...response.data[keyAPI],
+            id: keyAPI,
+        };
+    });
 });
 
-// const addTodo = createAsyncThunk('todo/addTodo', async () => {
-//     const response = await axiosAPI.post<ITodo>('todo.json',)
-// })
+export const addTodo = createAsyncThunk('todo/addTodo', async (title: string) => {
+    const response = await axiosAPI.post<ITodo>('todo.json', {title, status: true});
+    return response.data;
+});
 
 
 export const todoSlice = createSlice({
     name: 'task',
     initialState,
-    reducers: {
-        increase: (state) => {
-            console.log(state.todos);
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchTodo.pending, (state) => {
             state.loading = true;
@@ -49,6 +52,9 @@ export const todoSlice = createSlice({
             .addCase(fetchTodo.rejected, (state) => {
                 state.loading = false;
                 state.error = true;
+            })
+            .addCase(addTodo.fulfilled, (state, action: PayloadAction<ITodo>) => {
+                state.todos.push(action.payload);
             });
 
     }
@@ -56,4 +62,3 @@ export const todoSlice = createSlice({
 
 
 export const todoReducer = todoSlice.reducer;
-export const {increase} = todoSlice.actions;
