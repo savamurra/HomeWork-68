@@ -1,19 +1,29 @@
 import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../app/store.ts";
-import {fetchTodo, increase} from "./todoSlice.ts";
+import {AppDispatch, RootState} from "../../app/store.ts";
+import {fetchTodo} from "./todoSlice.ts";
 import {useEffect} from "react";
+import TodoForm from "../../components/TodoForm/TodoForm.tsx";
 
 
 const ToDo = () => {
-    const title = useSelector((state: RootState) => state.todo);
-    const dispatch = useDispatch();
+    const {todos} = useSelector((state: RootState) => state.todo);
+    const dispatch = useDispatch<AppDispatch>();
     useEffect(() => {
         dispatch(fetchTodo());
     }, [dispatch]);
 
+
     return (
         <div>
-            <button onClick={() => dispatch(increase())}>Check status</button>
+            <ul>
+                {todos.map((todo) => (
+                    <li key={todo.id}>
+                        <input type="checkbox" checked={todo.status}/>
+                        {todo.title}
+                    </li>
+                ))}
+            </ul>
+            <TodoForm/>
         </div>
     );
 };
