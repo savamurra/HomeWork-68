@@ -19,7 +19,7 @@ const TodoForm = () => {
 
     return (
         <div>
-            <form onSubmit={onSubmit} style={{width: '500px'}}>
+            <form onSubmit={onSubmit} style={{width: '400px'}}>
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
